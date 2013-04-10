@@ -1,0 +1,10 @@
+options( bank: -1 );
+
+include( "bcd.asm" );
+
+const BCD_MAX_SIZE = 8;
+var bcd_buf:int[BCD_MAX_SIZE];
+
+function bcd_set( to:int*, size:int, n:int16 ):int*;
+
+function bcd_add( to:int*, size:int, n:int* ):int*;

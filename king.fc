@@ -1,0 +1,291 @@
+include("math.fc");
+include("util.fc");
+include("common.fc");
+include("enemy.fc");
+
+options( bank: 2 );
+
+/*********************************************
+ * キングフォスル
+ *********************************************/
+const KING_STATE_APPEAR = 0;
+const KING_STATE_NORMAL = 1;
+
+const KING_BG = incbin("data/Dari_King_kihon.nam");
+const KING_BG_BROKEN_FIN1 = [
+					  0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+					  0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+					  0x06,0x07,0x08,0x09,0x00,0x00,0x00,0x2f,
+					  0x16,0x16,0x18,0x19,0x1a,0x1b,0x1c,0x1d
+					  ];
+const KING_SP_BROKEN_FIN1 = [ 0x10,0x96,0x02,0x67, // ;上ビレ壊れ(パレット2)
+							  0x09,0x98,0x02,0x6f,
+							  0];
+const KING_BG_BROKEN_FIN2 = [
+					  0x7a,0x7b,0x7c,0x7d,0x7e,0x7f,0xb0,0xb1,
+					  0x72,0x73,0x74,0x75,0x76,0x00,0x00,0x00,
+					  0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+					  0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00
+					  ];
+const KING_SP_BROKEN_FIN2 = [ 0x4c,0x9a,0x02,0x8c, // ;下ヒレ壊れ(パレット2)
+							  0x4d,0x9c,0x02,0x8e,
+							  0x4f,0x9e,0x02,0x9c,
+							  0];
+
+const KING_SPR:int[] = [ 0x20,0x80,0x02,0x1B, //目の周り
+						 0x20,0x82,0x02,0x22,
+						 0x25,0x84,0x02,0x29,
+						 0x3D,0x86,0x02,0x7D, //腹の赤
+						 0x2D,0x88,0x02,0x85,
+						 0x09,0x8A,0x02,0xA4, //背ビレの赤
+						 0x40,0x8C,0x22,0x2B, //口のパーツ(BGより優先度低)
+
+						 0];
+const KING_SP_MOUTH: int[] = [ 0x3D,0x8E,0x02,0x23, 0,  //口の赤開閉0
+							   0x3D,0x90,0x02,0x23, 0,
+							   0x3D,0x92,0x02,0x23, 0,
+							   0x3D,0x94,0x02,0x23, 0 ];
+
+const KING_SP_ANIM0:int[] = [ 0x30,0xA0,0x02,0xBC, //尾ビレ1
+							  0x30,0xA2,0x02,0xC4,
+							  0x28,0xA4,0x02,0xCC,
+							  0x28,0xA6,0x02,0xD4,
+							  0 ];
+const KING_SP_ANIM1:int[] = [ 0x30,0xA8,0x02,0xBC, //尾ビレ2
+							  0x30,0xAA,0x02,0xC4,
+							  0x28,0xAC,0x02,0xCC,
+							  0 ];
+const KING_SP_ANIM2:int[] = [ 0x30,0xAE,0x02,0xBA, //尾ビレ3
+							  0x30,0xB0,0x02,0xC2,
+							  0x28,0xB2,0x02,0xCA,
+							  0 ];
+const KING_SP_ANIM:int*[] = [ KING_SP_ANIM0, KING_SP_ANIM1, KING_SP_ANIM2 ];
+
+const KING_SP_GUN:int[] = [ 0x39,0xda,0x21,0x14, // ;攻撃12
+							0x39,0xd6,0x21,0x1c,
+							0x3c,0xc8,0x22,0x24,
+							0 ];
+
+const KING_BG_GUN:int[] = [0xec, 0xed, 0xee, 0xfc, 0xfd, 0xfe];
+const KING_BG_GUN2:int[] = [0xd1, 0xd2, 0xd3, 0xe1, 0xe1, 0xe3];
+
+const KING_PAL0 = [0x0f, 0x02, 0x12, 0x10,
+				   0x0f, 0x00, 0x10, 0x20,
+				   0x0f, 0x00, 0x10, 0x10,
+				   0x0f, 0x00, 0x12, 0x10,
+				   0x0f, 0x02, 0x12, 0x10
+				   ];
+
+function kingfossil_new():void
+{
+	boss_state = KING_STATE_APPEAR;
+	boss_x = 240;
+	boss_y = 255;
+	boss_vx = 1;
+	boss_vy = -1;
+	boss_hp1 = 40; // 上びれの耐久度
+	boss_hp2 = 40; // 下びれの耐久度
+	boss_anim = 0; // 体のアニメーション
+	boss_anim2 = 0; // 口のアニメーション
+	boss_p1 = 0;
+	boss_c1 = 0;
+	bang_wait = 0;
+	boss_pal = 1;
+	boss_cur_pal = 0;
+	ppu_put16( gr_pos(0,12)+0x400, KING_BG, 512 );
+	if( 0 ){
+		boss_x = 150;
+		boss_y = 110;
+		boss_p1 = 1;
+		boss_state = KING_STATE_APPEAR;
+	}
+}
+
+function kingfossil_process():void
+{
+	var x = boss_x - 104;
+	var y = boss_y - 40;
+	
+	switch( boss_state ){
+	case KING_STATE_APPEAR:
+		switch( boss_p1 ){
+		case 0:
+			boss_pal = 1;
+			boss_x -= (giff16+4) / 16;
+			boss_y -= (giff16+8) / 16;
+			boss_anim2 = 0;
+			if( boss_y <= 110 ){
+				boss_p1 = 1;
+				boss_c1 = 0;
+			}
+		case 1:
+			boss_c1 += 1;
+			boss_pal = boss_c1 / 20 + 1;
+			if( boss_c1 >= 79 ){
+				boss_p1 = 0;
+				boss_c1 = 0;
+				boss_state = KING_STATE_NORMAL;
+			}
+		}
+	case KING_STATE_NORMAL:
+		// 移動
+		boss_pal = 0;
+		if( anim_count % 4 == 0 ){
+			if( boss_x < 160 ){
+				boss_vx = 1;
+			}else if( boss_x > 220 ){
+				boss_vx = -1;
+			}
+			boss_x += boss_vx;
+		}
+
+		if( anim_count % 2 == 0 ){
+			
+			if( boss_y < 72 ){
+				boss_vy = 1;
+			}else if( boss_y > 170 ){
+				boss_vy = -1;
+			}
+			boss_y += boss_vy;
+		}
+
+		// 口の動き
+		boss_c1 += 1;
+		switch( boss_p1 ){
+		case 0: // 口を閉じている
+			boss_anim2 = 0;
+			if( boss_c1 >= 40 ){
+				boss_p1 = 1;
+				boss_c1 = 0;
+			}
+		case 1: // 口を開き途中
+			boss_anim2 = boss_c1 / 12;
+			if( boss_c1 >= 35 ){
+				boss_p1 = 2;
+				boss_c1 = 0;
+			}
+		case 2: // 口を開いている状態
+			boss_anim2 = 3;
+			if( boss_c1 < 20 ){
+				gr_sprites( x+16-boss_c1, y, KING_SP_GUN );
+			}else if( boss_c1 == 20 ){
+				gr_add( gr_pos(1,19)+0x400,  KING_BG_GUN   , 3 );
+				gr_add( gr_pos(1,20)+0x400, &KING_BG_GUN[3], 3 );
+			}else if( boss_c1 < 180 ){
+				if( boss_c1 % 40 == 0 ){
+					en_bul_nway( boss_x - 88, boss_y + 22, 128, 3, 4, 14 );
+				}
+				// gr_sprites( x, y, KING_SP_GUN );
+			}else if( boss_c1 == 180 ){
+				gr_add( gr_pos(1,19)+0x400,  KING_BG_GUN2   , 3 );
+				gr_add( gr_pos(1,20)+0x400, &KING_BG_GUN2[3], 3 );
+			}else{
+				gr_sprites( x+(boss_c1-184), y, KING_SP_GUN );
+			}
+			if( boss_c1 >= 200 ){
+				boss_p1 = 3;
+				boss_c1 = 0;
+			}
+		case 3: // 口を閉じ途中
+			boss_anim2 = 2 - boss_c1 / 16;
+			if( boss_c1 >= 47 ){
+				boss_p1 = 0;
+				boss_c1 = 0;
+			}
+		}
+	}
+	
+	// 弾のヒット判定
+	if( boss_state == KING_STATE_NORMAL ){
+		var i:int;
+		// 口
+		if( boss_anim2 == 3 && en_check_hit(boss_x-80, boss_y+16, 16, 24 ) ){
+			my_add_score('000001');
+			if( !bang_wait ){
+				bang_new(boss_x-68, boss_y+8);
+				bang_wait = 18;
+			}
+		}
+		// 体
+		if( en_check_hit(boss_x-32, boss_y+12, 112, 50 ) ){}
+		// 背びれ
+		if( boss_hp1 > 0 && en_check_hit(boss_x+18, boss_y-28, 32, 28 ) ){
+			if( !bang_wait ){
+				bang_new(boss_x+18, boss_y-28);
+				bang_wait = 18;
+			}
+			boss_hp1 -= 1;
+			if( boss_hp1 == 0 ){
+				// 背びれ破壊
+				gr_add( gr_pos(11,12)+0x400, &KING_BG_BROKEN_FIN1[ 0], 8 );
+				gr_add( gr_pos(11,13)+0x400, &KING_BG_BROKEN_FIN1[ 8], 8 );
+				gr_add( gr_pos(11,14)+0x400, &KING_BG_BROKEN_FIN1[16], 8 );
+				gr_add( gr_pos(11,15)+0x400, &KING_BG_BROKEN_FIN1[24], 8 );
+			}
+		}
+		// 腹びれ
+		if( boss_hp2 > 0 && en_check_hit(boss_x+38, boss_y+38, 32, 30 ) ){
+			if( !bang_wait ){
+				bang_new(boss_x+48, boss_y+38);
+				bang_wait = 18;
+			}
+			boss_hp2 -= 1;
+			if( boss_hp2 == 0 ){
+				// 腹ビレ破壊
+				gr_add( gr_pos(15,21)+0x400, &KING_BG_BROKEN_FIN2[ 0], 8 );
+				gr_add( gr_pos(15,22)+0x400, &KING_BG_BROKEN_FIN2[ 8], 8 );
+				gr_add( gr_pos(15,23)+0x400, &KING_BG_BROKEN_FIN2[16], 8 );
+				gr_add( gr_pos(15,24)+0x400, &KING_BG_BROKEN_FIN2[24], 8 );
+			}
+		}
+		if( bang_wait ) bang_wait -= 1;
+	}
+
+	// ラスター用のパラメータを計算
+	boss_scroll_x = -(boss_x-96);
+	if( boss_y >= 40+48+3 ){
+		boss_top_space = boss_y - (40+48);
+		boss_scroll_y = 40+48;
+	}else{
+		boss_top_space = 0;
+		boss_scroll_y = 96-(boss_y-40-48)-8;
+	}
+	if( boss_y <= (176+40-56-2) ){
+		boss_bottom_space = (176+40-56) - boss_y;
+	}else{
+		boss_bottom_space = 0;
+	}
+	boss_space = 176-boss_top_space-boss_bottom_space-1;
+	if( boss_top_space > 0 ) boss_top_space -= 1;
+	if( boss_bottom_space > 0 ) boss_bottom_space -= 1;
+
+	// アニメーション
+	boss_anim = anim_count / 16 % 4;
+	
+	// バンクの指定
+	const CBANK4:int[] = [20,18,21,18];
+	cbank4 = CBANK4[boss_anim];
+	const CBANK5:int[] = [19,22,23,24];
+	cbank5 = CBANK5[boss_anim2];
+
+	// パレットの設定
+	if( boss_cur_pal != boss_pal ){
+		gr_add( 0x3f00, &KING_PAL0[boss_pal*4], 4 );
+		boss_cur_pal = boss_pal;
+	}
+
+	x = boss_x - 104;
+	y = boss_y - 40;
+	// スプライトを表示
+	if( boss_pal == 0 ){
+		//gr_sprite( boss_x, boss_y, 0, 0 ); // 座標合わせ用スプライト
+		gr_sprites( x, y, KING_SPR );
+		if( boss_hp1 == 0 ){ gr_sprites( x, y, KING_SP_BROKEN_FIN1 ); }
+		if( boss_hp2 == 0 ){ gr_sprites( x, y, KING_SP_BROKEN_FIN2 ); }
+		gr_sprites( x, y, KING_SP_ANIM[[0,1,2,1][boss_anim]] );
+		// 口元のスプライト
+		gr_sprites( x, y, &KING_SP_MOUTH[boss_anim2*5] );
+	}
+		
+}
+

@@ -1,0 +1,295 @@
+options( bank_count: 8 );
+options( bank: -2 );
+
+include asm ( "macro.asm" );
+include macro ( "macro.rb" );
+
+include( "mmc3.fc" );
+include( "nes.fc" );
+include( "math.fc" );
+include( "util.fc" );
+include( "bcd.fc" );
+include( "mck.fc" );
+
+include( "common.fc" );
+include( "enemy.fc" );
+include( "king.fc" );
+include( "title.fc" );
+
+include( "main.asm" );
+
+include('data/Dari_Sp_Kihon.chr');
+include('data/Dari_Bg_Kihon.chr');
+include('data/Dari_Bg_King.chr');
+include('data/Dari_Bg_King2.chr');
+include('data/title.chr');
+const BASE_BANK = 8;
+const TITLE_BANK = 32;
+
+
+function my_pallet_anim( pal:int*, shift:int ):void
+{
+	my_pal_tmp[0] = pal[0];
+	my_pal_tmp[1] = pal[1+(shift  )%3];
+	my_pal_tmp[2] = pal[1+(shift+1)%3];
+	my_pal_tmp[3] = pal[1+(shift+2)%3];
+	gr_add( 0x3f1c, my_pal_tmp, 4 );
+}
+
+function my_process():void
+{
+	var i:int;
+	// 自機の移動
+	if( my_stat == 0 ){
+		pad_update();
+		var dir = (1 + pad_down - pad_up)*3 + (1+pad_right - pad_left);
+		const VX:sint[] = [-12,0,12,
+						   -16,0,16,
+						   -12,0,12];
+		const VY:sint[] = [-12,-16,-12,
+						   0,0,0,
+						   12,16,12];
+		my_x += (VX[dir]+giff16/2) / 8;
+		my_y += (VY[dir]+giff16/2) / 8;
+
+		if( my_x < 16 ){ my_x = 16; }
+		if( my_x > 232 ){ my_x = 232; }
+		if( my_y < 48 ){ my_y = 48; }
+		if( my_y > 208 ){ my_y = 208; }
+
+		// 死亡!
+		if( my_bang ){
+			my_bang_count = 8;
+			my_muteki = 1;
+			my_muteki_count = 8;
+			my_bang = 0;
+		}
+		if( my_bang_count ){
+			my_bang_count -= 1;
+		}
+
+		// 弾を打つ
+		if( my_wait == 0 ){
+			if( pad_a ){
+				var n:int;
+				for( n, 0, MY_BUL_MAX ){
+					if( my_bul_type[n] == 0 ){
+						my_bul_type[n] = 1;
+						my_bul_x[n] = my_x+16;
+						my_bul_y[n] = my_y;
+						my_bul_idx = ( my_bul_idx + 1 ) % MY_BUL_MAX;
+						my_wait = 4;
+						break;
+					}
+				}
+			}
+		}else{
+			my_wait -= 1;
+		}
+
+		if( my_muteki_count ){
+			my_muteki_count -= (giff+1)/4;
+			if( my_muteki_count == 0 ) my_muteki = 0;
+		}
+
+		if( anim_count % 2 ){
+			// 自機表示
+			gr_sprite( my_x-16, my_y-8, 0, 0 );
+			gr_sprite( my_x- 8, my_y-8, 2, 0 );
+			gr_sprite( my_x   , my_y-8, 4, 0 );
+			gr_sprite( my_x+ 8, my_y-8, 6, 0 );
+		}else{
+			// ARM表示
+			var shift = anim_count/8%3;
+			if( my_bang_count ){
+				my_pallet_anim( ARM_PALLET[1], shift );
+			}else{
+				my_pallet_anim( ARM_PALLET[0], shift );
+			}
+			gr_sprite( my_x-26, my_y- 8, 8, 3 );
+			gr_sprite( my_x-18, my_y- 8,10, 3 );
+			gr_sprite( my_x-10, my_y-16,12, 3 );
+			gr_sprite( my_x-10, my_y   ,12, 128 | 3 );
+			gr_sprite( my_x- 2, my_y-16,14, 3 );
+			gr_sprite( my_x- 2, my_y   ,14, 128 | 3 );
+			gr_sprite( my_x+ 6, my_y-16,16, 3 );
+			gr_sprite( my_x+ 6, my_y   ,16, 128 | 3 );
+			gr_sprite( my_x+14, my_y- 8,18, 3 );
+		}
+
+	}else{
+		if( my_wait ){
+			my_wait -= 1;
+		}else{
+			for( i, 0, MY_BUL_MAX ){
+				my_bul_type[i] = 0;
+			}
+			my_stat = 0;
+			my_wait = 0;
+			my_muteki_count = 60;
+		}
+	}
+	
+	if( my_score_changed ){
+		gr_add( gr_pos(6,0), my_score, 6 );
+	}
+
+}
+
+const ARM_PALLET0:int[] = [0x0f,0x0b,0x1b,0x2b];
+const ARM_PALLET1:int[] = [0x0f,0x05,0x15,0x25];
+const ARM_PALLET:int*[] = [ ARM_PALLET0, ARM_PALLET1 ];
+
+// 自機の弾の処理
+function my_bul_process():void
+{
+	var i = 0;
+	for( i, 0, MY_BUL_MAX ){
+		if( my_bul_type[i] == 1 ){
+			// 通常時
+			if( my_bul_x[i] < 240 ){
+				my_bul_x[i] += 8;
+				gr_sprite( my_bul_x[i]-4, my_bul_y[i]-12, 0x44, 2 );
+			}else{
+				my_bul_type[i] = 0;
+			}
+		}
+	}
+}
+
+const TOP_BG:int[] = incbin("data/top2.nam");
+
+function main_irq():void;
+
+function game_init():void
+{
+	ppu_lock();
+	
+	mmc3_set_cbank( 0, 0 );
+	mmc3_set_cbank( 1, 26 );
+	mmc3_set_cbank( 2, 8 );
+	mmc3_set_cbank( 3, 9 );
+	mmc3_set_cbank( 4, 10 );
+	mmc3_set_cbank( 5, 11 );
+	
+	ppu_scroll1 = 0;
+	ppu_scroll2 = 232;
+
+	// パレットの初期化
+	ppu_put( 0x3f00, PALLET, 32 );
+
+	// VRAMの初期化
+	ppu_fill( 0x2000, 0, 0x0800 );
+
+	// トップを表示
+	ppu_fill( 0x23c0, 0b11111111, 8 );
+	ppu_put( gr_pos(0,0), TOP_BG, 64 );
+	
+	// 岩を配置
+	var i:int;
+	PPU_ADDR = 0x20;
+	PPU_ADDR = 0x80;
+	for( i, 0, 32 ){ PPU_DATA = 0xa0+i%8; }
+	for( i, 0, 32 ){ PPU_DATA = 0xb0+i%8; }
+	for( i, 0, 32 ){ PPU_DATA = 0x80+i%8; }
+	for( i, 0, 32 ){ PPU_DATA = 0x90+i%8; }
+	ppu_fill( 0x23c8, 0b10101010, 8 );
+	
+	// ppu_put( gr_pos(18,18), "HOGE", 4 );
+
+
+	my_x = 30;
+	my_y = 120;
+	bcd_set( my_score, 6, 0 );
+	my_score_changed = 1;
+	bg_scroll = 0;
+	en_init();
+	kingfossil_new();
+	irq_setup = main_irq;
+
+	// MEMO: はじめの１フレームの表示のため
+	boss_top_space = 170;
+	boss_bottom_space = 0;
+	boss_space = 4;
+	boss_scroll_x = 0;
+	boss_scroll_y = 96;
+	
+	asm( "cli" );
+	ppu_unlock();
+
+}
+
+function game_run():void
+{
+	game_init();
+	
+	while( 1 ){
+
+		bg_scroll += 2;
+
+		anim_count += 1;
+		anim = anim_count / 8 % 4;
+		giff16 = GIFF_TABLE[anim_count%16];
+		giff = giff16/4;
+
+		en_bul_process();
+		my_process();
+		my_bul_process();
+		en_process();
+		kingfossil_process();
+    
+		wait_vsync();
+		mmc3_set_cbank( 0, anim_count / 4 % 2 * 2 );
+	}
+}
+
+function main(): void
+{
+	MMC3_IRQ_DISABLE = 0;
+	ppu_lock();
+
+	mmc3_set_pbank( 0, 0 );
+	mmc3_set_pbank( 1, 1 );
+	
+	// mmc3_init();
+	irq_setup = no_effect;
+	MMC3_IRQ_DISABLE = 0;
+	MMC3_MIRROR = 0;
+	APU_INTERRUPT = 0x40; // disable APU IRQ
+	APU_DMC = 0;
+	gr_idx = 0;
+	ppu_ctrl1_bak = 0b10100000;
+	ppu_ctrl2_bak = 0b00011000;
+
+	// test();
+
+	mck_init();
+	mck_play(0);
+
+	title_run();
+	// mck_stop();
+	// mck_play(0);
+
+	ppu_lock();
+	mmc3_set_pbank( 0, 2 );
+	
+	game_run();
+  
+}
+
+
+var buf:int[6];
+var str:int[6];
+
+function test():void
+{
+	ppu_fill( 0x2000, 0, 0x400 );
+	ppu_put( PPU_ADDR_PALLET, PALLET, 16 );
+	mmc3_set_cbank( 2, BASE_BANK );
+	mmc3_set_cbank( 3, BASE_BANK+1 );
+	ppu_unlock();
+	bcd_set( buf, 6, 9999 );
+	bcd_add( buf, 6, '009999' );
+	gr_add( gr_pos(10,8), buf, 6);
+	while(1){ wait_vsync(); }
+}

@@ -1,0 +1,81 @@
+include("util.fc");
+include("common.fc");
+
+options( bank: 0 );
+include("title.asm");
+
+const PPU_ADDR_PALLET = 0x3f00;
+
+const TITLE_PALLET = incbin("data/title.pal");
+const TITLE_BG = incbin("data/title.nam");
+const TITLE_TAITO = [0x9f, 0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7, 0xa8,
+					 0x00, 0xa9, 0xaa, 0xab, 0xac, 0xad, 0xae, 0xaf, 0xb0, 0xb1 ];
+
+var title_scroll:int;
+var title_state:int;
+
+function title_irq_setup():void;
+
+function title_init():void
+{
+	ppu_lock();
+	
+	ppu_ctrl1_bak = 0b10100000;
+	ppu_ctrl2_bak = 0b00011000;
+	ppu_scroll1 = 0;
+	ppu_scroll2 = 0;
+	MMC3_MIRROR = 0;
+	irq_setup = title_irq_setup;
+	
+	anim_count = 0;
+	title_scroll = 0;
+	title_state = 0;
+	
+	ppu_put( PPU_ADDR_PALLET   , TITLE_PALLET, 16 );
+
+	ppu_fill( 0x2000, 0x14, 0x200 );
+	ppu_fill( 0x2200,    0, 0x200 );
+	ppu_fill( 0x2400, 0x14, 0x200 );
+	// ppu_fill( 0x2600,    0, 0x200 );
+	ppu_put16( gr_pos(0,4) + 0x400, TITLE_BG, 32*8 );
+	ppu_fill( 0x23c0+40, 0xf0, 8 );
+	ppu_fill( 0x27c0+8, 0x00, 8 );
+	ppu_fill( 0x27c0+16, 0xa5, 8 );
+	
+	ppu_unlock();
+	asm( "cli" );
+}
+
+function title_run():void
+{
+	title_init();
+	while(1){
+		anim_count += 1;
+		switch( title_state ){
+		case 0:
+			title_scroll += 2;
+			ppu_scroll1 = title_scroll;
+			if( title_scroll >= 240 ){
+				title_state = 1;
+				gr_add( gr_pos(11,22)+0x000, TITLE_TAITO, 10 );
+				gr_add( gr_pos(11,23)+0x000, &TITLE_TAITO[10], 10 );
+				
+				gr_add( gr_pos(3,25), "\x40 TAITO CORPORATION 1986", 24 );
+				gr_add( gr_pos(3,26),    "   ALL RIGHTS RESERVED  ", 24 );
+			}
+		case 1:
+			pad_update();
+			if( anim_count % 32 == 0 ){
+				if( anim_count % 64 == 0 ){
+					gr_add( gr_pos(11,17), "PUSH START", 10 );
+				}else{
+					gr_add( gr_pos(11,17), "          ", 10 );
+				}
+			}
+			if( pad_a || pad_start ){
+				return;
+			}
+		}
+		wait_vsync();
+	}
+}

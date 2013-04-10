@@ -1,0 +1,103 @@
+options( bank: -1 );
+
+include( 'bcd.fc' );
+
+var anim:int;
+var anim_count:int;
+var giff:int8;
+var giff16:int8;
+
+var my_stat:int;
+var my_muteki:int;
+var my_muteki_count:int;
+var my_bang:int;
+var my_x:int;
+var my_y:int;
+var my_bang_count:int;
+var my_wait:int;
+var my_pal_tmp:int[4];
+var my_score:int[6];
+var my_score_changed:int;
+
+const MY_BUL_MAX = 3;
+var my_bul_type:int[MY_BUL_MAX];
+var my_bul_x:int[MY_BUL_MAX];
+var my_bul_y:int[MY_BUL_MAX];
+var my_bul_vx:sint8[MY_BUL_MAX];
+var my_bul_vy:sint8[MY_BUL_MAX];
+var my_bul_idx:int;
+
+const EN_MAX = 16;
+var en_type:int[EN_MAX];
+var en_x:int[EN_MAX];
+var en_y:int[EN_MAX];
+var en_p1:int[EN_MAX];
+var en_p2:int[EN_MAX];
+var en_p3:int[EN_MAX];
+var en_p4:int[EN_MAX];
+var en_wait:int;
+var en_now:int;
+
+const EN_BUL_MAX = 32;
+var en_bul_type:int[EN_BUL_MAX];
+var en_bul_x:int[EN_BUL_MAX]; // フリーリストのnextとしても使用
+var en_bul_y:int[EN_BUL_MAX];
+var en_bul_vx:sint8[EN_BUL_MAX];
+var en_bul_vy:sint8[EN_BUL_MAX];
+var en_bul_idx:int;
+var en_bul_free:int; // フリーリストの先頭
+
+// ボス関係
+var boss_type:int;
+var boss_state:int;
+var boss_x:int;
+var boss_y:int;
+var boss_vx:sint;
+var boss_vy:sint;
+var boss_hp1:int;
+var boss_hp2:int;
+var boss_anim:int;
+var boss_anim2:int;
+var boss_p1:int;
+var boss_c1:int;
+var boss_pal:int;
+var boss_cur_pal:int;
+
+var boss_scroll_x:int;
+var boss_scroll_y:int;
+var boss_space:int;
+var boss_top_space:int;
+var boss_bottom_space:int;
+var boss_scroll_x2:int options( address: 0xa0 );
+var boss_scroll_y2:int options( address: 0xa1 );
+var boss_space2:int options( address: 0xa2 );
+var boss_top_space2:int options( address: 0xa3 );
+var boss_bottom_space2:int options( address: 0xa4 );
+var cbank4:int options( address: 0xa5 );
+var cbank5:int options( address: 0xa6 );
+var bang_wait:int;
+
+// IRQ関連
+var irq_setup:void() options( address: 0x86 );
+var irq_next:uint16 options( address: 0x80 );
+var bg_scroll:int;
+var scroll_x:int[2] options( address: 0x82 );
+var scroll_y:int[2] options( address: 0x84 );
+
+const PALLET:int[] = incbin("data/Dari_Sp_Kihon.chr.dat");
+
+const GIFF_TABLE = [0,8,4,12, 2,10,6,14, 1,9,5,13, 3,11,7,15];
+
+function outside(x:int,y:int):int
+{
+	return ( x < 8 || x > 240 || y < 8 || y > 240 );
+}
+
+function no_effect():void;
+
+function my_add_score( n:int* ):void
+{
+	bcd_add( my_score, 6, n );
+	my_score_changed = 1;
+}
+

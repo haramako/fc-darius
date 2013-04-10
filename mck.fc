@@ -1,0 +1,10 @@
+options( bank: 1 );
+
+var mck_enable:int;
+
+include( "ppmck.asm" );
+include( "mck.asm" );
+
+function mck_init():void;
+function mck_play(song_no:int):void;
+function mck_stop():void;

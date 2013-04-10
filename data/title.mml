@@ -1,0 +1,76 @@
+#TITLE		ロマンシング サ・ガ 2 - バトル
+#COMPOSER	伊藤賢治
+#PROGRAMER	1
+#BANK-CHANGE	2
+
+ABCDE	t160 l16
+
+A	@2@v1EP1o4 bg-b>dg-dg-b<aea>d-ed-ea< bgb>dgdgbd-<b->d-g-b-g-b->d-< b1 ^2.r4<
+A	L
+A	@0@v0EP0o5 d-2^8<b8g-8b8> d-4e2d4 d-dd-<bg-2.> @2@v1EP1o4 bg-b>dg-dg-bg-bg-d<b>d<bg-
+A	@0@v0EP0o5 <b2^8>d-8d8e8 d4d-2<a4> d-dd-<b>g-2. @2@v1EP1o4 d4a4a-4f4
+A	@0@v0EP0o5 d-2^8<b8g-8b8> d-4e2d4 d-dd-<bg-2.> @2@v1EP1o4 bg-b>dg-dg-bg-bg-d<b>d<bg-
+A	@0@v0EP0o5 <b2^8>d-8d8e8 g-4d-4r8d-ded-<a>d-< b2.> @2@v1EP1o4 >d<b>dg- bbbr2.r
+A	@2@v1EP1o4 r4b4>d-4d4 e4d4d-4d4 d-4<e4g-4g4< a8> @0@v0EP0o5 <a8a-8a8>c8.<b8.a8>
+A	<g4> @2@v1EP1o4 b4>d-4d4 e4d4d-4d4 e4d-4d4e4<< a8> @0@v0EP0o5 <g-8f8g-8a8.b8.a8>
+A	<g4.g-ga-8.e8.a-8 a4.a-ab-8.g-8.b-8 b8.>d-8.d8e8.d8.d-8 r4<b4&>
+A	>b2.< @2@v1EP1o4 >a4 a-4f4g-2 ^1 r2<
+
+B	@2@v1EP1o4
+B	d8g-8b8>d8< d-8e8a8>d-8< d8g8b8>d8< g-8b-8>d-8g-8 d1 ^2.r4<
+B	L
+B	<bab>d<bab>d<bab>d<bab>d< babg-babg-babg-babg- bab>d<bab>d<bab>d<bab>d d8g-8b8>d8<b8g-8d8<b8>
+B	<gg-gdgg-gdgg-gdgg-gd agaeagaeagaeagae bab>d<bab>d> g-bg-d<b>d<bg-< b4>d4<b4a-4>
+B	<bab>d<bab>d<bab>d<bab>d< babg-babg-babg-babg- bab>d<bab>d<bab>d<bab>d d8g-8b8>d8<b8g-8d8<b8>
+B	<gg-gdgg-gdgg-gdgg-gd agaeagaeagaeagae bab>d<bab>dg-dg-bg-8b8> dddr2.r<
+B	d2e4g-4 g4g-4e4g-4 e4<g4a4b4> g-4f8g-8a2
+B	d2e4g-4 g4g-4e4g-4 g4e4g-4g4> g-4f8g-8ag-e-<b>e-<bg-e-
+B	gegb>e4<b8.a-8.e8 ag-a>d-g-4d-8.<b-8.g-8 d8.e8.g8a8.g8.e8 r4d4&
+B	d<b>dg-bg-dg-d<b>dg-bg-dg- d<b>dg-bg-dg-d<b>dg-bg-dg- d<b>dg-bg-b>dg-bg-d<b>d<bg- d4r4
+
+C	o3@q2
+C	>r8dr<b4>r8d-r<a4 r8brg4r4>EP5g-4EPOF< b8a8b8>d8<b8a8b8g-8 b8a8b8>d8<b8a8b8g-8
+C	L
+C	b8b8b8a8b8b8b8g-8 b8b8b8a8r8g-8>EP5g-4EPOF< b8a8b8>d8<b8a8b8g-8 b8a8b8>d8<b8>br<a>a8.<
+C	g8g8g8g-8g8g8g8>d8< a8a8a8g8r8a8>EP5g-4EPOF< b8a8b8>d8<b8a8b8g-8 b4b4b8>bg-<b>b8g-<
+C	b8b8b8a8b8b8b8g-8 b8b8b8a8r8g-8>EP5g-4EPOF< b8a8b8>d8<b8a8b8g-8 b8a8b8>d8<b8>br<a>a8.<
+C	g8g8g8g-8g8g8g8>d8< a8a8a8g8a8a8a8>e8< b8a8b8>d8<b8a8b8g-8 bbbr8.>q8ab@q2eg-e<aba8.
+C	g8g-8g8>d8<g8g-8g8>d8< g8g-8g8>d8<g8g-8g8>d8< a8g8a8>e8<a8g8a8>e8 d8d-8d8a8d8>d<dc>c8.<<
+C	g8g-8g8>d8<g8g-8g8>d8< g8g-8g8>d8<g8g-8g8>d8< a8g8a8>e8<a8g8a8>e8 d8d-8d8a8<b8.>e-8.<b8
+C	e8.>e8.q8de@q2<e>e<be4^ g-8.>g-8.q8eg-@q2<g->g-d-<g-4^ g2a2> EP5g-4EPOF<b4&
+C	b8a8b8>d8<b8a8b8>d8< b8a8b8>d8<b8a8b8>d8< b8a8b8>d8<b8a8b8>d8< g-2
+
+D	r4@v7n3,2n5,4 w4n3,2. @v5n0n0n0n0n0n0@v6n3@v5n0@v6n3@v5n0n0@v6n3@v5n0n0n0n0 @v5n0n0n0n0n0n0@v6n3@v5n0@v6n3@v5n0n0@v6n3r4
+D	L
+D	@v7n3,1 w1 @v5n0,8n0n0n0,8n0n0n0,8n0n0n0,8n0n0 n0,8n0n0n0,8n0n0r2
+D	@v7n3,1 w1 @v5n0,8n0n0n0,8n0n0n0,8n0n0n0,8n0n0 r4@v7n5,4n3,4n5,4
+D	@v7n3,1 w1 @v5n0,8n0n0n0,8n0n0n0,8n0n0n0,8n0n0 n0,8n0n0n0,8n0n0r2
+D	@v7n3,1 w1 @v5n0,8n0n0n0,8n0n0n0,8n0n0n0,8n0n0 r1
+D	@v5n0,8n0n0n0,8n0n0n0,8n0n0n0,8n0n0 n0,8n0n0n0,8n0n0n0,8n0n0n0,8n0n0 n0,8n0n0n0,8n0n0n0,8n0n0n0,8n0n0 n0,8n0n0n0,8n0n0n0,8n0n0n0,8n0n0
+D	@v5n0,8n0n0n0,8n0n0n0,8n0n0n0,8n0n0 n0,8n0n0n0,8n0n0n0,8n0n0n0,8n0n0 n0,8n0n0n0,8n0n0n0,8n0n0n0,8n0n0 n0,8n0n0r4@v7n5,8.n3,8.n5,8
+D	@v7n3,1 n5,1 r1 r4@v7n3,4
+D	w4.@v6n3@v5n0@v6n3@v5n0n0@v6n3@v5n0n0@v6n3@v5n0 n0n0n0n0n0n0n0n0@v6n3@v5n0n0@v6n3@v5n0n0@v6n3@v5n0 n0n0n0n0n0n0n0n0@v6n3@v5n0n0@v6n3@v5n0n0@v6n3@v5n0 r2
+
+E	o0
+E	cgfec4cgfec4 cgfec4cdd8dd8d c4c4c4c4 c4c4c4dddd
+E	L
+E	c4c4c4c4 c4c4cdd8d8gf c4d4c8c8d4 c4d4cdd8dd8d
+E	c4c4c4c4 c4c4cdd8d8gf c4d4c8c8d4 ggfec4c4cddd
+E	c4c4c4c4 c4c4cdd8d8gf c4d4c8c8d4 c4d4cdd8dd8d
+E	c4c4c4c4 c4c4cdd8d8gf c4d4c8c8d4 ddd4..gfee4
+E	c4d4c8c8d4 c4d8c4c8d4 c4d4c8c8d4 c4d8c4c8d4
+E	c4d4c8c8d4 c4d8c4c8d4 c4d4c8c8d4 c4d8ddc8.c8.c8
+E	c4ddddcgfcfegf c4ddddcgfcfegf c1 gfeec4&
+E	c4c4c4c4 c4c4c4c4 c4c4c4c4 dgfdfede
+
+@v0 = { 9 10 10 9 } ; trumpet
+@v1 = { 3 4 5 6 7 } ; strings
+@v5 = { 6 1 0 } ; close hihat
+@v6 = { 8 7 6 5 2 1 0 } ; open hihat
+@v7 = { 10 9 9 8 8 8 7 7 7 7 6 6 6 6 6 5 5 5 5 5 5 4 4 4 4 4 4 4
+	 3 3 3 3 3 3 3 3 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1 0 } ; cymbal
+
+@EP0 = { 0 0 0 0 0 0 0 0 0 0 0 0 | 1 0 0 -1 0 0 -1 0 0 1 0 0 } ; trumpet vibrato
+@EP1 = { 0 0 0 0 0 0 | 1 0 0 0 0 0 -1 0 0 0 0 0 } ; strings vibrato
+@EP5 = { -4 } ; bass portamento
+
