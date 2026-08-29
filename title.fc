@@ -3,7 +3,11 @@ use * from common;
 use mmc3;
 
 options( bank: 0 );
+include("macro.asm");
 include("title.asm");
+private:
+use main;
+public:
 
 const PPU_ADDR_PALLET = 0x3f00;
 

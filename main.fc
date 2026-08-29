@@ -9,7 +9,7 @@ use nes;
 use math;
 use * from util;
 use bcd;
-use mck;
+//use mck;
 
 use * from common;
 private:
@@ -266,8 +266,8 @@ function main(): void
 
 	// test();
 
-	mck.mck_init();
-	mck.mck_play(0);
+	//mck.mck_init();
+	//mck.mck_play(0);
 
 	title.title_run();
 	// mck_stop();

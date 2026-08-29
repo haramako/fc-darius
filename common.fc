@@ -93,7 +93,7 @@ function outside(x:int,y:int):int
 	return ( x < 8 || x > 240 || y < 8 || y > 240 );
 }
 
-function no_effect():void;
+function no_effect():void {}
 
 function my_add_score( n:int* ):void
 {

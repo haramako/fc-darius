@@ -1,111 +1,121 @@
+.export _util_memcpy
+.export _util_memzero
+.export _util_memset
+.export _util_gr_sprite
+.export _util_gr_sprites
+.export _util_gr_pos
+.export _util_ppu_fill
+.export _util_ppu_put16
+.export _util_ppu_put
+
 ;;; function ppu_put( to:int16, from:int*, size:int ):void
 ;;; ただし、size=0の場合、256byte転送する
 ppu_put_sub:
-        lda _ppu_put_to+1
-        sta _PPU_ADDR
-        lda _ppu_put_to+0
-        sta _PPU_ADDR
+        lda _util_ppu_put_to+1
+        sta _nes_PPU_ADDR
+        lda _util_ppu_put_to+0
+        sta _nes_PPU_ADDR
         ldy #0
-.loop:
-        lda [_ppu_put_from],y
-        sta _PPU_DATA
+@loop:
+        lda (_util_ppu_put_from),y
+        sta _nes_PPU_DATA
         iny
-        cpy _ppu_put_size
-        bne .loop
+        cpy _util_ppu_put_size
+        bne @loop
         rts
 		
 ;;; function ppu_put( to:int16, from:int*, size:int ):void
-_ppu_put:
+_util_ppu_put:
 		lda S+0,x
-		sta _ppu_put_to+0
+		sta _util_ppu_put_to+0
 		lda S+1,x
-		sta _ppu_put_to+1
+		sta _util_ppu_put_to+1
 		lda S+2,x
-		sta _ppu_put_from+0
+		sta _util_ppu_put_from+0
 		lda S+3,x
-		sta _ppu_put_from+1
+		sta _util_ppu_put_from+1
 		lda S+4,x
-		sta _ppu_put_size
+		sta _util_ppu_put_size
 		jmp ppu_put_sub
 
 ;;; function ppu_put( to:int16, from:int*, size:uint16 ):void
-_ppu_put16:
+_util_ppu_put16:
 	lda S+0,x
-	sta _ppu_put_to+0
+	sta _util_ppu_put_to+0
 	lda S+1,x
-	sta _ppu_put_to+1
+	sta _util_ppu_put_to+1
 	lda S+2,x
-	sta _ppu_put_from+0
+	sta _util_ppu_put_from+0
 	lda S+3,x
-	sta _ppu_put_from+1
+	sta _util_ppu_put_from+1
 
-.loop:	
+@loop:	
 	lda S+5,x
-	beq .end
+	beq @end
 	lda #0
-	sta _ppu_put_size
+	sta _util_ppu_put_size
 	jsr ppu_put_sub
-	inc _ppu_put_from+1
-	inc _ppu_put_to+1
+	inc _util_ppu_put_from+1
+	inc _util_ppu_put_to+1
 	dec S+5,x
-	bne .loop
-.end:	
+	bne @loop
+@end:	
 
 	lda S+4,x
-	beq .end2
-	sta _ppu_put_size
+	beq @end2
+	sta _util_ppu_put_size
 	jsr ppu_put_sub
-.end2:
+@end2:
 	rts
 
 ;;; function ppu_fill( to:int16, pat:int, size:int16 ):void;
-_ppu_fill:
+_util_ppu_fill:
 	lda S+1,x
-	sta _PPU_ADDR
+	sta _nes_PPU_ADDR
 	lda S+0,x
-	sta _PPU_ADDR
+	sta _nes_PPU_ADDR
 	
-.loop:
+@loop:
 	lda S+4,x					; while( HIGH(size) ){
-	beq .end
+	beq @end
 	dec S+4,x					;   HIGH(size)--;
 	ldy #0
-.loop2:							;   for( y, 0, 256 ){ PPU_DATA = pat; }
+@loop2:							;   for( y, 0, 256 ){ PPU_DATA = pat; }
 	lda S+2,x
-	sta _PPU_DATA
+	sta _nes_PPU_DATA
 	dey
-	bne .loop2
-.end2:	
-	jmp .loop					; }
-.end:	
+	bne @loop2
+@end2:	
+	jmp @loop					; }
+@end:	
 	
 	lda S+3,x					;   for( y, 0, LOW(size) ){ PPU_DATA = pat; }
 	tay
-.loop3:							
+@loop3:							
 	lda S+2,x
-	sta _PPU_DATA
+	sta _nes_PPU_DATA
 	dey
-	bne .loop3
-.end3:	
+	bne @loop3
+@end3:	
 	
 	rts
 
 	
 ;;; function gr_pos( x:int, y:int ):int16
-_gr_pos:
+_util_gr_pos:
 	lda S+3,x					; if( y < 0 ) y += 30;
-	bpl .end2
+	bpl @end2
 	clc
 	adc #30
 	sta S+3,x
-.end2:	
+@end2:	
 	lda S+3,x					; if( y > 30 ) y -= 30;
 	cmp #30
-	bmi .end
+	bmi @end
 	sec
 	sbc #30
 	sta S+3,x
-.end:	
+@end:	
 	lda S+3,x		; result[0] = x + y * 32
 	asl a
 	asl a
@@ -135,30 +145,30 @@ _gr_pos:
 ;;   gr_sprite_idx += 4;
 ;; }
 ;; USING: X
-_gr_sprite:
-	ldy _gr_sprite_idx      ; if( gr_sprite_idx >= 252 ){ return; } var p:int = gr_sprite_idx;
+_util_gr_sprite:
+	ldy _util_gr_sprite_idx      ; if( gr_sprite_idx >= 252 ){ return; } var p:int = gr_sprite_idx;
 	cpy #252
-	bcs .end
+	bcs @end
 	lda S+1,x      ; gr_sprite_buf[p] = y;
-	sta _gr_sprite_buf,y   
+	sta _util_gr_sprite_buf,y   
 	iny                     ; gr_sprite_buf[p+1] = pat;
 	lda S+2,x
 	clc
 	adc	#1
-	sta _gr_sprite_buf,y
+	sta _util_gr_sprite_buf,y
 	iny                     ; gr_sprite_buf[p+2] = mode;
 	lda S+3,x
-	sta _gr_sprite_buf,y
+	sta _util_gr_sprite_buf,y
 	iny                     ; gr_sprite_buf[p+3] = x;
 	lda S+0,x
-	sta _gr_sprite_buf,y
+	sta _util_gr_sprite_buf,y
 	iny                     ; gr_sprite_idx += 4;
-	sty _gr_sprite_idx
-.end:
+	sty _util_gr_sprite_idx
+@end:
 	rts
         
 ;;; function gr_sprites( spr_x:int, spr_y:int, data:int* ):void
-_gr_sprites:
+_util_gr_sprites:
 	lda S+0,x
 	sta reg+2
 	lda S+1,x
@@ -171,51 +181,51 @@ _gr_sprites:
 	pha
 	ldy #0
 	
-.loop:							; while(1){
-	ldx _gr_sprite_idx			;   x = gr_sprite_idx
+@loop:							; while(1){
+	ldx _util_gr_sprite_idx			;   x = gr_sprite_idx
 	cpx #252					;   if( x == 252 ) break;
-	beq .end
-	lda [reg],y					;   a = *reg[y];
-	beq .end					;   if( a == 0 ) break;
+	beq @end
+	lda (reg),y					;   a = *reg[y];
+	beq @end					;   if( a == 0 ) break;
 	clc							;   gr_sprite_buf[x] = a + spr_y
 	adc reg+3
-	bcc .else					;   if( $carry ){ y+=4; continue; }
+	bcc @else					;   if( $carry ){ y+=4; continue; }
 	iny
 	iny
 	iny
 	iny
-	jmp .loop
-.else:
-	sta _gr_sprite_buf,x
+	jmp @loop
+@else:
+	sta _util_gr_sprite_buf,x
 	iny							;   y++; x++;
 	inx
 
-	lda [reg],y					;   gr_sprite_buf[x] = reg[y]
+	lda (reg),y					;   gr_sprite_buf[x] = reg[y]
 	clc
 	adc #1
-	sta _gr_sprite_buf,x
+	sta _util_gr_sprite_buf,x
 	iny							;   y++; x++;
 	inx
 
-	lda [reg],y					;   gr_sprite_buf[x] = reg[y]
-	sta _gr_sprite_buf,x
+	lda (reg),y					;   gr_sprite_buf[x] = reg[y]
+	sta _util_gr_sprite_buf,x
 	iny							;   y++; x++;
 	inx
 
-	lda [reg],y					;   gr_sprite_buf[x] = reg[y] + spr_x
+	lda (reg),y					;   gr_sprite_buf[x] = reg[y] + spr_x
 	clc
 	adc reg+2
-	bcc .else2					;   if( $carry ){ y+=1; continue; }
+	bcc @else2					;   if( $carry ){ y+=1; continue; }
 	iny
-	jmp .loop
-.else2:
-	sta _gr_sprite_buf,x
+	jmp @loop
+@else2:
+	sta _util_gr_sprite_buf,x
 	iny							;   y++; x++;
 	inx
 	
-	stx _gr_sprite_idx			;   gr_sprite_idx = x;
-	jmp .loop					; }
-.end:
+	stx _util_gr_sprite_idx			;   gr_sprite_idx = x;
+	jmp @loop					; }
+@end:
 	stx $20
 	pla							; pop x;
 	tax
@@ -223,7 +233,7 @@ _gr_sprites:
 	
 ;;; function memcpy(to:int*, from:int*, size:int):void
 ;;; USING Y
-_memcpy:
+_util_memcpy:
 		lda S+0,x
 		sta reg+0
 		lda S+1,x
@@ -235,17 +245,17 @@ _memcpy:
 		lda S+4,x
 		sta reg+4
         ldy #0
-.loop:
-        lda [reg+2],y
-        sta [reg],y
+@loop:
+        lda (reg+2),y
+        sta (reg),y
         iny
         cpy reg+4
-        bne .loop
+        bne @loop
         rts
         
 ;;; function memset(p:int*, c:int, size:int):void
 ;;; USING Y
-_memset:
+_util_memset:
 	lda S+0,x
 	sta reg+0
 	lda S+1,x
@@ -254,16 +264,16 @@ _memset:
 	sta reg+3
 	lda S+2,x
 	ldy #0
-.loop:
-	sta [reg+0],y
+@loop:
+	sta (reg+0),y
 	iny
 	cpy reg+3
-	bne .loop
+	bne @loop
 	rts
 
 ;;; function memset(p:int*, size:int):void
 ;;; USING Y
-_memzero:
+_util_memzero:
 		lda S+0,x
 		sta reg+0
 		lda S+1,x
@@ -272,10 +282,10 @@ _memzero:
 		sta reg+2
         ldy #0
 		lda #0
-.loop:
-        sta [reg+0],y
+@loop:
+        sta (reg+0),y
         iny
         cpy reg+2
-        bne .loop
+        bne @loop
         rts
 	

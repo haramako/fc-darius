@@ -2,6 +2,8 @@ use math;
 use util;
 use * from common;
 
+include("enemy.asm")
+
 options( bank: -1 );
 
 /*********************************************
