@@ -1,6 +1,6 @@
-include( "nes.fc" );
-include( "mmc3.fc" );
-include( "util.asm" );
+use nes;
+use mmc3;
+use util;
 
 options( bank: -1 );
 
@@ -44,28 +44,28 @@ function wait_vsync():void
 
 function ppu_lock():void
 {
-	PPU_CTRL1 = 0b00000000;
-	PPU_CTRL2 = 0b00000000;
+	nes.PPU_CTRL1 = 0b00000000;
+	nes.PPU_CTRL2 = 0b00000000;
 }
 
 function ppu_unlock():void
 {
-	PPU_CTRL1 = 0b10000000;
+	nes.PPU_CTRL1 = 0b10000000;
 	vsync_flag = 1;
 	wait_vsync();
 }
 
-function ppu_put( to:int16, from:int*, size:int ):void;
-function ppu_put16( to:int16, from:int*, size:int16 ):void;
+function ppu_put( to:int16, from_:int*, size:int ):void;
+function ppu_put16( to:int16, from_:int*, size:int16 ):void;
 function ppu_fill( to:int16, pat:int, size:int16 ):void;
 
-function gr_add( to:int16, from:int*, size:int):void
+function gr_add( to:int16, from_:int*, size:int):void
 {
 	while( gr_idx >= GR_MAX ){
 		vsync_flag = 2;
 		while( vsync_flag ){}
 	}
-	gr_from_buf[gr_idx] = from;
+	gr_from_buf[gr_idx] = from_;
 	gr_to_buf[gr_idx] = to;
 	gr_size_buf[gr_idx] = size;
 	gr_idx += 1;
@@ -86,21 +86,21 @@ function gr_sprite2x2( x:int, y:int, pat:int, mode:int ):void
 
 function pad_update():void
 {
-	PAD_CTRL = 1;
-	PAD_CTRL = 0;
-	pad_a = PAD_CTRL % 2;
-	pad_b = PAD_CTRL % 2;
-	pad_select = PAD_CTRL % 2;
-	pad_start = PAD_CTRL % 2;
-	pad_up = PAD_CTRL % 2;
-	pad_down = PAD_CTRL % 2;
-	pad_left = PAD_CTRL % 2;
-	pad_right = PAD_CTRL % 2;
+	nes.PAD_CTRL = 1;
+	nes.PAD_CTRL = 0;
+	pad_a = nes.PAD_CTRL % 2;
+	pad_b = nes.PAD_CTRL % 2;
+	pad_select = nes.PAD_CTRL % 2;
+	pad_start = nes.PAD_CTRL % 2;
+	pad_up = nes.PAD_CTRL % 2;
+	pad_down = nes.PAD_CTRL % 2;
+	pad_left = nes.PAD_CTRL % 2;
+	pad_right = nes.PAD_CTRL % 2;
 }
 
 function memset(p:int*, c:int, size:int):void options (extern:true) {}
 function memzero(p:int*, size:int):void options (extern:true) {}
-function memcpy(from:int*, to:int*, size:int):void options (extern:true) {}
+function memcpy(from_:int*, to:int*, size:int):void options (extern:true) {}
 
 function wait(n:int):void
 {

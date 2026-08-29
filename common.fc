@@ -1,6 +1,6 @@
 options( bank: -1 );
 
-include( 'bcd.fc' );
+use bcd;
 
 var anim:int;
 var anim_count:int;
@@ -97,7 +97,7 @@ function no_effect():void;
 
 function my_add_score( n:int* ):void
 {
-	bcd_add( my_score, 6, n );
+	bcd.bcd_add( my_score, 6, n );
 	my_score_changed = 1;
 }
 

@@ -1,7 +1,9 @@
-include("math.fc");
-include("util.fc");
-include("common.fc");
-include("enemy.fc");
+use math;
+use util;
+use * from common;
+private:
+use enemy;
+public:
 
 options( bank: 2 );
 
@@ -92,7 +94,7 @@ function kingfossil_new():void
 	bang_wait = 0;
 	boss_pal = 1;
 	boss_cur_pal = 0;
-	ppu_put16( gr_pos(0,12)+0x400, KING_BG, 512 );
+	util.ppu_put16( util.gr_pos(0,12)+0x400, KING_BG, 512 );
 	if( 0 ){
 		boss_x = 150;
 		boss_y = 110;
@@ -167,20 +169,20 @@ function kingfossil_process():void
 		case 2: // 口を開いている状態
 			boss_anim2 = 3;
 			if( boss_c1 < 20 ){
-				gr_sprites( x+16-boss_c1, y, KING_SP_GUN );
+				util.gr_sprites( x+16-boss_c1, y, KING_SP_GUN );
 			}else if( boss_c1 == 20 ){
-				gr_add( gr_pos(1,19)+0x400,  KING_BG_GUN   , 3 );
-				gr_add( gr_pos(1,20)+0x400, &KING_BG_GUN[3], 3 );
+				util.gr_add( util.gr_pos(1,19)+0x400,  KING_BG_GUN   , 3 );
+				util.gr_add( util.gr_pos(1,20)+0x400, &KING_BG_GUN[3], 3 );
 			}else if( boss_c1 < 180 ){
 				if( boss_c1 % 40 == 0 ){
-					en_bul_nway( boss_x - 88, boss_y + 22, 128, 3, 4, 14 );
+					enemy.en_bul_nway( boss_x - 88, boss_y + 22, 128, 3, 4, 14 );
 				}
 				// gr_sprites( x, y, KING_SP_GUN );
 			}else if( boss_c1 == 180 ){
-				gr_add( gr_pos(1,19)+0x400,  KING_BG_GUN2   , 3 );
-				gr_add( gr_pos(1,20)+0x400, &KING_BG_GUN2[3], 3 );
+				util.gr_add( util.gr_pos(1,19)+0x400,  KING_BG_GUN2   , 3 );
+				util.gr_add( util.gr_pos(1,20)+0x400, &KING_BG_GUN2[3], 3 );
 			}else{
-				gr_sprites( x+(boss_c1-184), y, KING_SP_GUN );
+				util.gr_sprites( x+(boss_c1-184), y, KING_SP_GUN );
 			}
 			if( boss_c1 >= 200 ){
 				boss_p1 = 3;
@@ -199,43 +201,43 @@ function kingfossil_process():void
 	if( boss_state == KING_STATE_NORMAL ){
 		var i:int;
 		// 口
-		if( boss_anim2 == 3 && en_check_hit(boss_x-80, boss_y+16, 16, 24 ) ){
+		if( boss_anim2 == 3 && enemy.en_check_hit(boss_x-80, boss_y+16, 16, 24 ) ){
 			my_add_score('000001');
 			if( !bang_wait ){
-				bang_new(boss_x-68, boss_y+8);
+				enemy.bang_new(boss_x-68, boss_y+8);
 				bang_wait = 18;
 			}
 		}
 		// 体
-		if( en_check_hit(boss_x-32, boss_y+12, 112, 50 ) ){}
+		if( enemy.en_check_hit(boss_x-32, boss_y+12, 112, 50 ) ){}
 		// 背びれ
-		if( boss_hp1 > 0 && en_check_hit(boss_x+18, boss_y-28, 32, 28 ) ){
+		if( boss_hp1 > 0 && enemy.en_check_hit(boss_x+18, boss_y-28, 32, 28 ) ){
 			if( !bang_wait ){
-				bang_new(boss_x+18, boss_y-28);
+				enemy.bang_new(boss_x+18, boss_y-28);
 				bang_wait = 18;
 			}
 			boss_hp1 -= 1;
 			if( boss_hp1 == 0 ){
 				// 背びれ破壊
-				gr_add( gr_pos(11,12)+0x400, &KING_BG_BROKEN_FIN1[ 0], 8 );
-				gr_add( gr_pos(11,13)+0x400, &KING_BG_BROKEN_FIN1[ 8], 8 );
-				gr_add( gr_pos(11,14)+0x400, &KING_BG_BROKEN_FIN1[16], 8 );
-				gr_add( gr_pos(11,15)+0x400, &KING_BG_BROKEN_FIN1[24], 8 );
+				util.gr_add( util.gr_pos(11,12)+0x400, &KING_BG_BROKEN_FIN1[ 0], 8 );
+				util.gr_add( util.gr_pos(11,13)+0x400, &KING_BG_BROKEN_FIN1[ 8], 8 );
+				util.gr_add( util.gr_pos(11,14)+0x400, &KING_BG_BROKEN_FIN1[16], 8 );
+				util.gr_add( util.gr_pos(11,15)+0x400, &KING_BG_BROKEN_FIN1[24], 8 );
 			}
 		}
 		// 腹びれ
-		if( boss_hp2 > 0 && en_check_hit(boss_x+38, boss_y+38, 32, 30 ) ){
+		if( boss_hp2 > 0 && enemy.en_check_hit(boss_x+38, boss_y+38, 32, 30 ) ){
 			if( !bang_wait ){
-				bang_new(boss_x+48, boss_y+38);
+				enemy.bang_new(boss_x+48, boss_y+38);
 				bang_wait = 18;
 			}
 			boss_hp2 -= 1;
 			if( boss_hp2 == 0 ){
 				// 腹ビレ破壊
-				gr_add( gr_pos(15,21)+0x400, &KING_BG_BROKEN_FIN2[ 0], 8 );
-				gr_add( gr_pos(15,22)+0x400, &KING_BG_BROKEN_FIN2[ 8], 8 );
-				gr_add( gr_pos(15,23)+0x400, &KING_BG_BROKEN_FIN2[16], 8 );
-				gr_add( gr_pos(15,24)+0x400, &KING_BG_BROKEN_FIN2[24], 8 );
+				util.gr_add( util.gr_pos(15,21)+0x400, &KING_BG_BROKEN_FIN2[ 0], 8 );
+				util.gr_add( util.gr_pos(15,22)+0x400, &KING_BG_BROKEN_FIN2[ 8], 8 );
+				util.gr_add( util.gr_pos(15,23)+0x400, &KING_BG_BROKEN_FIN2[16], 8 );
+				util.gr_add( util.gr_pos(15,24)+0x400, &KING_BG_BROKEN_FIN2[24], 8 );
 			}
 		}
 		if( bang_wait ) bang_wait -= 1;
@@ -270,7 +272,7 @@ function kingfossil_process():void
 
 	// パレットの設定
 	if( boss_cur_pal != boss_pal ){
-		gr_add( 0x3f00, &KING_PAL0[boss_pal*4], 4 );
+		util.gr_add( 0x3f00, &KING_PAL0[boss_pal*4], 4 );
 		boss_cur_pal = boss_pal;
 	}
 
@@ -279,12 +281,12 @@ function kingfossil_process():void
 	// スプライトを表示
 	if( boss_pal == 0 ){
 		//gr_sprite( boss_x, boss_y, 0, 0 ); // 座標合わせ用スプライト
-		gr_sprites( x, y, KING_SPR );
-		if( boss_hp1 == 0 ){ gr_sprites( x, y, KING_SP_BROKEN_FIN1 ); }
-		if( boss_hp2 == 0 ){ gr_sprites( x, y, KING_SP_BROKEN_FIN2 ); }
-		gr_sprites( x, y, KING_SP_ANIM[[0,1,2,1][boss_anim]] );
+		util.gr_sprites( x, y, KING_SPR );
+		if( boss_hp1 == 0 ){ util.gr_sprites( x, y, KING_SP_BROKEN_FIN1 ); }
+		if( boss_hp2 == 0 ){ util.gr_sprites( x, y, KING_SP_BROKEN_FIN2 ); }
+		util.gr_sprites( x, y, KING_SP_ANIM[[0,1,2,1][boss_anim]] );
 		// 口元のスプライト
-		gr_sprites( x, y, &KING_SP_MOUTH[boss_anim2*5] );
+		util.gr_sprites( x, y, &KING_SP_MOUTH[boss_anim2*5] );
 	}
 		
 }

@@ -1,7 +1,6 @@
-include("math.fc");
-include("util.fc");
-include("common.fc");
-include("enemy.asm");
+use math;
+use util;
+use * from common;
 
 options( bank: -1 );
 
@@ -63,8 +62,8 @@ function en_bul_new_angle( x:int, y:int, angle:int, speed:int ):void
 	en_bul_type[n] = 1;
 	en_bul_x[n] = x;
 	en_bul_y[n] = y;
-	en_bul_vx[n] = cos(angle)/speed;
-	en_bul_vy[n] = -sin(angle)/speed;
+	en_bul_vx[n] = math.cos(angle)/speed;
+	en_bul_vy[n] = -math.sin(angle)/speed;
 }
 
 /**
@@ -80,8 +79,8 @@ function en_bul_nway( x:int, y:int, angle:int, speed:int, way:int, spread:int ):
 		en_bul_type[n] = 1;
 		en_bul_x[n] = x;
 		en_bul_y[n] = y;
-		en_bul_vx[n] = cos(angle)/speed;
-		en_bul_vy[n] = -sin(angle)/speed;
+		en_bul_vx[n] = math.cos(angle)/speed;
+		en_bul_vy[n] = -math.sin(angle)/speed;
 		angle += spread;
 	}
 }
@@ -151,11 +150,11 @@ function bang_process( i:int ):void
 		p1 = p1 / 8;
 		switch( p1 ){
 		case 0:
-			gr_sprites( en_x[i]-16, en_y[i]-8, BANG_SPR );
+			util.gr_sprites( en_x[i]-16, en_y[i]-8, BANG_SPR );
 		case 1:
-			gr_sprites( en_x[i]-16, en_y[i]-8, BANG_SPR1 );
+			util.gr_sprites( en_x[i]-16, en_y[i]-8, BANG_SPR1 );
 		case 2:
-			gr_sprites( en_x[i]-16, en_y[i]-8, BANG_SPR2 );
+			util.gr_sprites( en_x[i]-16, en_y[i]-8, BANG_SPR2 );
 		}
 		en_p1[i] += 1;
 		}

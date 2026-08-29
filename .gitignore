@@ -1,1 +1,3 @@
 a.*
+.fc-build/
+.vscode/

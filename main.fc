@@ -2,19 +2,21 @@ options( bank_count: 8 );
 options( bank: -2 );
 
 include asm ( "macro.asm" );
-include macro ( "macro.rb" );
+//include macro ( "macro.rb" );
 
-include( "mmc3.fc" );
-include( "nes.fc" );
-include( "math.fc" );
-include( "util.fc" );
-include( "bcd.fc" );
-include( "mck.fc" );
+use mmc3;
+use nes;
+use math;
+use * from util;
+use bcd;
+use mck;
 
-include( "common.fc" );
-include( "enemy.fc" );
-include( "king.fc" );
-include( "title.fc" );
+use * from common;
+private:
+use enemy;
+use king;
+public:
+use title;
 
 include( "main.asm" );
 
@@ -138,7 +140,8 @@ function my_process():void
 
 const ARM_PALLET0:int[] = [0x0f,0x0b,0x1b,0x2b];
 const ARM_PALLET1:int[] = [0x0f,0x05,0x15,0x25];
-const ARM_PALLET:int*[] = [ ARM_PALLET0, ARM_PALLET1 ];
+//const ARM_PALLET:int*[] = [ ARM_PALLET0, ARM_PALLET1 ];
+const ARM_PALLET:int*[] = [ <int*>0, <int*>0 ];
 
 // 自機の弾の処理
 function my_bul_process():void
@@ -165,12 +168,12 @@ function game_init():void
 {
 	ppu_lock();
 	
-	mmc3_set_cbank( 0, 0 );
-	mmc3_set_cbank( 1, 26 );
-	mmc3_set_cbank( 2, 8 );
-	mmc3_set_cbank( 3, 9 );
-	mmc3_set_cbank( 4, 10 );
-	mmc3_set_cbank( 5, 11 );
+	mmc3.mmc3_set_cbank( 0, 0 );
+	mmc3.mmc3_set_cbank( 1, 26 );
+	mmc3.mmc3_set_cbank( 2, 8 );
+	mmc3.mmc3_set_cbank( 3, 9 );
+	mmc3.mmc3_set_cbank( 4, 10 );
+	mmc3.mmc3_set_cbank( 5, 11 );
 	
 	ppu_scroll1 = 0;
 	ppu_scroll2 = 232;
@@ -187,12 +190,12 @@ function game_init():void
 	
 	// 岩を配置
 	var i:int;
-	PPU_ADDR = 0x20;
-	PPU_ADDR = 0x80;
-	for( i, 0, 32 ){ PPU_DATA = 0xa0+i%8; }
-	for( i, 0, 32 ){ PPU_DATA = 0xb0+i%8; }
-	for( i, 0, 32 ){ PPU_DATA = 0x80+i%8; }
-	for( i, 0, 32 ){ PPU_DATA = 0x90+i%8; }
+	nes.PPU_ADDR = 0x20;
+	nes.PPU_ADDR = 0x80;
+	for( i, 0, 32 ){ nes.PPU_DATA = 0xa0+i%8; }
+	for( i, 0, 32 ){ nes.PPU_DATA = 0xb0+i%8; }
+	for( i, 0, 32 ){ nes.PPU_DATA = 0x80+i%8; }
+	for( i, 0, 32 ){ nes.PPU_DATA = 0x90+i%8; }
 	ppu_fill( 0x23c8, 0b10101010, 8 );
 	
 	// ppu_put( gr_pos(18,18), "HOGE", 4 );
@@ -200,11 +203,11 @@ function game_init():void
 
 	my_x = 30;
 	my_y = 120;
-	bcd_set( my_score, 6, 0 );
+	bcd.bcd_set( my_score, 6, 0 );
 	my_score_changed = 1;
 	bg_scroll = 0;
-	en_init();
-	kingfossil_new();
+	enemy.en_init();
+	king.kingfossil_new();
 	irq_setup = main_irq;
 
 	// MEMO: はじめの１フレームの表示のため
@@ -232,46 +235,46 @@ function game_run():void
 		giff16 = GIFF_TABLE[anim_count%16];
 		giff = giff16/4;
 
-		en_bul_process();
+		enemy.en_bul_process();
 		my_process();
 		my_bul_process();
-		en_process();
-		kingfossil_process();
+		enemy.en_process();
+		king.kingfossil_process();
     
 		wait_vsync();
-		mmc3_set_cbank( 0, anim_count / 4 % 2 * 2 );
+		mmc3.mmc3_set_cbank( 0, anim_count / 4 % 2 * 2 );
 	}
 }
 
 function main(): void
 {
-	MMC3_IRQ_DISABLE = 0;
+	mmc3.MMC3_IRQ_DISABLE = 0;
 	ppu_lock();
 
-	mmc3_set_pbank( 0, 0 );
-	mmc3_set_pbank( 1, 1 );
+	mmc3.mmc3_set_pbank( 0, 0 );
+	mmc3.mmc3_set_pbank( 1, 1 );
 	
 	// mmc3_init();
 	irq_setup = no_effect;
-	MMC3_IRQ_DISABLE = 0;
-	MMC3_MIRROR = 0;
-	APU_INTERRUPT = 0x40; // disable APU IRQ
-	APU_DMC = 0;
+	mmc3.MMC3_IRQ_DISABLE = 0;
+	mmc3.MMC3_MIRROR = 0;
+	nes.APU_INTERRUPT = 0x40; // disable APU IRQ
+	nes.APU_DMC = 0;
 	gr_idx = 0;
 	ppu_ctrl1_bak = 0b10100000;
 	ppu_ctrl2_bak = 0b00011000;
 
 	// test();
 
-	mck_init();
-	mck_play(0);
+	mck.mck_init();
+	mck.mck_play(0);
 
-	title_run();
+	title.title_run();
 	// mck_stop();
 	// mck_play(0);
 
 	ppu_lock();
-	mmc3_set_pbank( 0, 2 );
+	mmc3.mmc3_set_pbank( 0, 2 );
 	
 	game_run();
   
@@ -284,12 +287,12 @@ var str:int[6];
 function test():void
 {
 	ppu_fill( 0x2000, 0, 0x400 );
-	ppu_put( PPU_ADDR_PALLET, PALLET, 16 );
-	mmc3_set_cbank( 2, BASE_BANK );
-	mmc3_set_cbank( 3, BASE_BANK+1 );
+	ppu_put( title.PPU_ADDR_PALLET, PALLET, 16 );
+	mmc3.mmc3_set_cbank( 2, BASE_BANK );
+	mmc3.mmc3_set_cbank( 3, BASE_BANK+1 );
 	ppu_unlock();
-	bcd_set( buf, 6, 9999 );
-	bcd_add( buf, 6, '009999' );
+	bcd.bcd_set( buf, 6, 9999 );
+	bcd.bcd_add( buf, 6, '009999' );
 	gr_add( gr_pos(10,8), buf, 6);
 	while(1){ wait_vsync(); }
 }
