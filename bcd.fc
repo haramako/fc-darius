@@ -1,11 +1,12 @@
-options( bank: -1 );
+#fc 2
+options(bank: -1);
 
-include( "macro.asm" );
-include( "bcd.asm" );
+include("macro.asm");
+include("bcd.asm");
 
 const BCD_MAX_SIZE = 8;
-var bcd_buf:int[BCD_MAX_SIZE];
+var bcd_buf:[BCD_MAX_SIZE]int;
 
-function bcd_set( to:int*, size:int, n:int16 ):int*;
+public function bcd_set(to:*int, size:int, n:int16):*int;
 
-function bcd_add( to:int*, size:int, n:int* ):int*;
+public function bcd_add(to:*int, size:int, n:*int):*int;
