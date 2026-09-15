@@ -2,7 +2,7 @@ use nes;
 use mmc3;
 use util;
 
-include("util.asm")
+include("util.asm");
 
 options( bank: -1 );
 
@@ -30,7 +30,7 @@ var pad_left:int;
 var pad_right:int;
 
 var ppu_put_to:int16;
-var ppu_put_from:int* options (address:0x80);
+var ppu_put_from:int* options (address:0x40);
 var ppu_put_size:int;
 var interrupt_i:int;
 

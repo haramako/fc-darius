@@ -5,7 +5,7 @@ private:
 use enemy;
 public:
 
-options( bank: 2 );
+options( bank: 2, org: 0x8000 );
 
 /*********************************************
  * キングフォスル
