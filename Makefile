@@ -1,6 +1,6 @@
 
 all:
-	../bin/fc -o darius.nes -d -t nes main.fc
+	fcc build -o darius.nes -d -t nes main.fc
 
 .PHONY: clean
 clean:

@@ -1,3 +1,7 @@
+	.export _interrupt
+	.export _interrupt_irq
+	.export scroll
+
 ;; function interrupt():void
 _interrupt:
 	
