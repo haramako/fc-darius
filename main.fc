@@ -23,6 +23,7 @@ include( "main.asm" );
 include('data/Dari_Sp_Kihon.chr');
 include('data/Dari_Bg_Kihon.chr');
 include('data/Dari_Bg_King.chr');
+include('data/Dari_Sp_King.chr');
 include('data/Dari_Bg_King2.chr');
 include('data/title.chr');
 const BASE_BANK = 8;

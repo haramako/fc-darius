@@ -18,7 +18,7 @@
 ;;;   x     : 2KB bank number
 ;;; use 11cycle
 .macro mmc3_cbank bank
-	lda #bank
+	lda #(bank | 128)
 	sta _mmc3_MMC3_BANK_SELECT
 	stx _mmc3_MMC3_BANK_DATA
 .endmacro
