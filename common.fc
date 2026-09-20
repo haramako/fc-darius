@@ -69,21 +69,21 @@ public var boss_scroll_y:int;
 public var boss_space:int;
 public var boss_top_space:int;
 public var boss_bottom_space:int;
-var boss_scroll_x2:int options(address: 0x60);
-var boss_scroll_y2:int options(address: 0x61);
-var boss_space2:int options(address: 0x62);
-var boss_top_space2:int options(address: 0x63);
-var boss_bottom_space2:int options(address: 0x64);
-public var cbank4:int options(address: 0x65);
-public var cbank5:int options(address: 0x66);
+var boss_scroll_x2:int options(address: 0x79);
+var boss_scroll_y2:int options(address: 0x7a);
+var boss_space2:int options(address: 0x7b);
+var boss_top_space2:int options(address: 0x7c);
+var boss_bottom_space2:int options(address: 0x7d);
+public var cbank4:int options(address: 0x7e);
+public var cbank5:int options(address: 0x7f);
 public var bang_wait:int;
 
 // IRQ関連
-public var irq_setup:fn():void options(address: 0x46);
-var irq_next:uint16 options(address: 0x40);
+public var irq_setup:fn():void options(address: 0x77);
+var irq_next:uint16 options(address: 0x71);
 public var bg_scroll:int;
-var scroll_x:[2]int options(address: 0x42);
-var scroll_y:[2]int options(address: 0x44);
+var scroll_x:[2]int options(address: 0x73);
+var scroll_y:[2]int options(address: 0x75);
 
 public const PALLET:[]int = incbin("data/Dari_Sp_Kihon.chr.dat");
 
