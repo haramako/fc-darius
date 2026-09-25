@@ -1,8 +1,8 @@
-#fc 2
-options(bank_count: 8, char_banks: 8);
-options(bank: -2);
+#fc 3
+@(bank_count: 8, char_banks: 8);
+@(bank: -2);
 
-include("macro.asm");
+@include("macro.asm");
 //include macro ( "macro.rb" );
 
 use mmc3;
@@ -19,18 +19,18 @@ use king;
 
 use title;
 
-include("main.asm");
+@include("main.asm");
 
-include('data/Dari_Sp_Kihon.chr');
-include('data/Dari_Bg_Kihon.chr');
-include('data/Dari_Bg_King.chr');
-include('data/Dari_Sp_King.chr');
-include('data/Dari_Bg_King2.chr');
-include('data/title.chr');
+@include('data/Dari_Sp_Kihon.chr');
+@include('data/Dari_Bg_Kihon.chr');
+@include('data/Dari_Bg_King.chr');
+@include('data/Dari_Sp_King.chr');
+@include('data/Dari_Bg_King2.chr');
+@include('data/title.chr');
 const BASE_BANK = 8;
 const TITLE_BANK = 32;
 
-function my_pallet_anim(pal:*int, shift:int):void
+function my_pallet_anim(pal:*u8, shift:u8):void
 {
 	my_pal_tmp[0] = pal[0];
 	my_pal_tmp[1] = pal[1 + (shift) % 3];
@@ -41,15 +41,15 @@ function my_pallet_anim(pal:*int, shift:int):void
 
 function my_process():void
 {
-	var i:int;
+	var i:u8;
 	// 自機の移動
 	if (my_stat == 0) {
 		pad_update();
 		var dir = (1 + pad_down - pad_up) * 3 + (1 + pad_right - pad_left);
-		const VX:[]sint = [-12, 0, 12,
+		const VX:[?]i8 = [-12, 0, 12,
 			-16, 0, 16,
 			-12, 0, 12];
-		const VY:[]sint = [-12, -16, -12,
+		const VY:[?]i8 = [-12, -16, -12,
 			0, 0, 0,
 			12, 16, 12];
 		my_x += (VX[dir] + giff16 / 2) / 8;
@@ -82,7 +82,7 @@ function my_process():void
 		// 弾を打つ
 		if (my_wait == 0) {
 			if (pad_a) {
-				var n:int;
+				var n:u8;
 				for (n = 0; n < MY_BUL_MAX; n++) {
 					if (my_bul_type[n] == 0) {
 						my_bul_type[n] = 1;
@@ -146,10 +146,10 @@ function my_process():void
 	}
 }
 
-const ARM_PALLET0:[]int = [0x0f, 0x0b, 0x1b, 0x2b];
-const ARM_PALLET1:[]int = [0x0f, 0x05, 0x15, 0x25];
+const ARM_PALLET0:[?]u8 = [0x0f, 0x0b, 0x1b, 0x2b];
+const ARM_PALLET1:[?]u8 = [0x0f, 0x05, 0x15, 0x25];
 //const ARM_PALLET:int*[] = [ ARM_PALLET0, ARM_PALLET1 ];
-const ARM_PALLET:[]*int = [bitcast<*int>(0), bitcast<*int>(0)];
+const ARM_PALLET:[?]*u8 = [@bitcast(*u8, 0), @bitcast(*u8, 0)];
 
 // 自機の弾の処理
 function my_bul_process():void
@@ -168,7 +168,7 @@ function my_bul_process():void
 	}
 }
 
-const TOP_BG:[]int = incbin("data/top2.nam");
+const TOP_BG:[?]u8 = @incbin("data/top2.nam");
 
 function main_irq():void;
 
@@ -197,7 +197,7 @@ function game_init():void
 	ppu_put(gr_pos(0, 0), TOP_BG, 64);
 
 	// 岩を配置
-	var i:int;
+	var i:u8;
 	nes.PPU_ADDR = 0x20;
 	nes.PPU_ADDR = 0x80;
 	for (i = 0; i < 32; i++) {
@@ -232,7 +232,7 @@ function game_init():void
 	boss_scroll_x = 0;
 	boss_scroll_y = 96;
 
-	asm("cli");
+	@asm("cli");
 	ppu_unlock();
 }
 
@@ -292,8 +292,8 @@ function main():void
 	game_run();
 }
 
-var buf:[6]int;
-var str:[6]int;
+var buf:[6]u8;
+var str:[6]u8;
 
 function test():void
 {

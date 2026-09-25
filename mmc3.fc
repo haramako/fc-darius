@@ -1,19 +1,19 @@
-#fc 2
-options(mapper: "MMC3");
-options(bank: -1);
+#fc 3
+@(mapper: "MMC3");
+@(bank: -1);
 
 //
 //
 // See: http://wiki.nesdev.com/w/index.php/Nintendo_MMC3
 
-var MMC3_BANK_SELECT:int options(address: 0x8000);
-var MMC3_BANK_DATA:int options(address: 0x8001);
-public var MMC3_MIRROR:int options(address: 0xA000);
-var MMC3_RAM_PROTECT:int options(address: 0xA001);
-var MMC3_IRQ_LATCH:int options(address: 0xC000);
-var MMC3_IRQ_RELOAD:int options(address: 0xC001);
-public var MMC3_IRQ_DISABLE:int options(address: 0xE000);
-var MMC3_IRQ_ENABLE:int options(address: 0xE001);
+var MMC3_BANK_SELECT:u8 @(address: 0x8000);
+var MMC3_BANK_DATA:u8 @(address: 0x8001);
+public var MMC3_MIRROR:u8 @(address: 0xA000);
+var MMC3_RAM_PROTECT:u8 @(address: 0xA001);
+var MMC3_IRQ_LATCH:u8 @(address: 0xC000);
+var MMC3_IRQ_RELOAD:u8 @(address: 0xC001);
+public var MMC3_IRQ_DISABLE:u8 @(address: 0xE000);
+var MMC3_IRQ_ENABLE:u8 @(address: 0xE001);
 
 /**
  * 初期化する.
@@ -44,7 +44,7 @@ function mmc3_init():void
  *   5: 0x1C00-0x1FFF ( 1KB )
  * bank: 1KB bank
  */
-public function mmc3_set_cbank(pos:int, bank:int):void
+public function mmc3_set_cbank(pos:u8, bank:u8):void
 {
 	MMC3_BANK_SELECT = 128 + pos;
 	MMC3_BANK_DATA = bank;
@@ -58,7 +58,7 @@ public function mmc3_set_cbank(pos:int, bank:int):void
  *   1: 0xA000-0xBFFF ( 8KB )
  * bank: 8KB bank
  */
-public function mmc3_set_pbank(pos:int, bank:int):void
+public function mmc3_set_pbank(pos:u8, bank:u8):void
 {
 	MMC3_BANK_SELECT = pos + (6 + 128);
 	MMC3_BANK_DATA = bank;

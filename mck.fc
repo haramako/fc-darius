@@ -1,10 +1,11 @@
-options( bank: 1 );
+#fc 3
+@( bank: 1 );
 
-var mck_enable:int;
+var mck_enable:u8;
 
-include( "ppmck.asm" );
-include( "mck.asm" );
+@include( "ppmck.asm" );
+@include( "mck.asm" );
 
 function mck_init():void;
-function mck_play(song_no:int):void;
+function mck_play(song_no:u8):void;
 function mck_stop():void;

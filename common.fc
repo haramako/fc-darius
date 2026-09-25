@@ -1,102 +1,102 @@
-#fc 2
-options(bank: -1);
+#fc 3
+@(bank: -1);
 
 use bcd;
 
-public var anim:int;
-public var anim_count:int;
-public var giff:int8;
-public var giff16:int8;
+public var anim:u8;
+public var anim_count:u8;
+public var giff:u8;
+public var giff16:u8;
 
-public var my_stat:int;
-public var my_muteki:int;
-public var my_muteki_count:int;
-public var my_bang:int;
-public var my_x:int;
-public var my_y:int;
-public var my_bang_count:int;
-public var my_wait:int;
-public var my_pal_tmp:[4]int;
-public var my_score:[6]int;
-public var my_score_changed:int;
+public var my_stat:u8;
+public var my_muteki:u8;
+public var my_muteki_count:u8;
+public var my_bang:u8;
+public var my_x:u8;
+public var my_y:u8;
+public var my_bang_count:u8;
+public var my_wait:u8;
+public var my_pal_tmp:[4]u8;
+public var my_score:[6]u8;
+public var my_score_changed:u8;
 
 public const MY_BUL_MAX = 3;
-public var my_bul_type:[MY_BUL_MAX]int;
-public var my_bul_x:[MY_BUL_MAX]int;
-public var my_bul_y:[MY_BUL_MAX]int;
-public var my_bul_vx:[MY_BUL_MAX]sint8;
-var my_bul_vy:[MY_BUL_MAX]sint8;
-public var my_bul_idx:int;
+public var my_bul_type:[MY_BUL_MAX]u8;
+public var my_bul_x:[MY_BUL_MAX]u8;
+public var my_bul_y:[MY_BUL_MAX]u8;
+public var my_bul_vx:[MY_BUL_MAX]i8;
+var my_bul_vy:[MY_BUL_MAX]i8;
+public var my_bul_idx:u8;
 
 public const EN_MAX = 16;
-public var en_type:[EN_MAX]int;
-public var en_x:[EN_MAX]int;
-public var en_y:[EN_MAX]int;
-public var en_p1:[EN_MAX]int;
-var en_p2:[EN_MAX]int;
-var en_p3:[EN_MAX]int;
-var en_p4:[EN_MAX]int;
-var en_wait:int;
-var en_now:int;
+public var en_type:[EN_MAX]u8;
+public var en_x:[EN_MAX]u8;
+public var en_y:[EN_MAX]u8;
+public var en_p1:[EN_MAX]u8;
+var en_p2:[EN_MAX]u8;
+var en_p3:[EN_MAX]u8;
+var en_p4:[EN_MAX]u8;
+var en_wait:u8;
+var en_now:u8;
 
 public const EN_BUL_MAX = 32;
-public var en_bul_type:[EN_BUL_MAX]int;
-public var en_bul_x:[EN_BUL_MAX]int; // フリーリストのnextとしても使用
-public var en_bul_y:[EN_BUL_MAX]int;
-public var en_bul_vx:[EN_BUL_MAX]sint8;
-public var en_bul_vy:[EN_BUL_MAX]sint8;
-var en_bul_idx:int;
-public var en_bul_free:int; // フリーリストの先頭
+public var en_bul_type:[EN_BUL_MAX]u8;
+public var en_bul_x:[EN_BUL_MAX]u8; // フリーリストのnextとしても使用
+public var en_bul_y:[EN_BUL_MAX]u8;
+public var en_bul_vx:[EN_BUL_MAX]i8;
+public var en_bul_vy:[EN_BUL_MAX]i8;
+var en_bul_idx:u8;
+public var en_bul_free:u8; // フリーリストの先頭
 
 // ボス関係
-var boss_type:int;
-public var boss_state:int;
-public var boss_x:int;
-public var boss_y:int;
-public var boss_vx:sint;
-public var boss_vy:sint;
-public var boss_hp1:int;
-public var boss_hp2:int;
-public var boss_anim:int;
-public var boss_anim2:int;
-public var boss_p1:int;
-public var boss_c1:int;
-public var boss_pal:int;
-public var boss_cur_pal:int;
+var boss_type:u8;
+public var boss_state:u8;
+public var boss_x:u8;
+public var boss_y:u8;
+public var boss_vx:i8;
+public var boss_vy:i8;
+public var boss_hp1:u8;
+public var boss_hp2:u8;
+public var boss_anim:u8;
+public var boss_anim2:u8;
+public var boss_p1:u8;
+public var boss_c1:u8;
+public var boss_pal:u8;
+public var boss_cur_pal:u8;
 
-public var boss_scroll_x:int;
-public var boss_scroll_y:int;
-public var boss_space:int;
-public var boss_top_space:int;
-public var boss_bottom_space:int;
-var boss_scroll_x2:int options(address: 0x79);
-var boss_scroll_y2:int options(address: 0x7a);
-var boss_space2:int options(address: 0x7b);
-var boss_top_space2:int options(address: 0x7c);
-var boss_bottom_space2:int options(address: 0x7d);
-public var cbank4:int options(address: 0x7e);
-public var cbank5:int options(address: 0x7f);
-public var bang_wait:int;
+public var boss_scroll_x:u8;
+public var boss_scroll_y:u8;
+public var boss_space:u8;
+public var boss_top_space:u8;
+public var boss_bottom_space:u8;
+var boss_scroll_x2:u8 @(address: 0x79);
+var boss_scroll_y2:u8 @(address: 0x7a);
+var boss_space2:u8 @(address: 0x7b);
+var boss_top_space2:u8 @(address: 0x7c);
+var boss_bottom_space2:u8 @(address: 0x7d);
+public var cbank4:u8 @(address: 0x7e);
+public var cbank5:u8 @(address: 0x7f);
+public var bang_wait:u8;
 
 // IRQ関連
-public var irq_setup:fn():void options(address: 0x77);
-var irq_next:uint16 options(address: 0x71);
-public var bg_scroll:int;
-var scroll_x:[2]int options(address: 0x73);
-var scroll_y:[2]int options(address: 0x75);
+public var irq_setup:fn():void @(address: 0x77);
+var irq_next:u16 @(address: 0x71);
+public var bg_scroll:u8;
+var scroll_x:[2]u8 @(address: 0x73);
+var scroll_y:[2]u8 @(address: 0x75);
 
-public const PALLET:[]int = incbin("data/Dari_Sp_Kihon.chr.dat");
+public const PALLET:[?]u8 = @incbin("data/Dari_Sp_Kihon.chr.dat");
 
 public const GIFF_TABLE = [0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15];
 
-function outside(x:int, y:int):int
+function outside(x:u8, y:u8):u8
 {
 	return (x < 8 || x > 240 || y < 8 || y > 240);
 }
 
 public function no_effect():void {}
 
-public function my_add_score(n:*int):void
+public function my_add_score(n:*u8):void
 {
 	bcd.bcd_add(my_score, 6, n);
 	my_score_changed = 1;

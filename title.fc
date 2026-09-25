@@ -1,23 +1,23 @@
-#fc 2
+#fc 3
 use util;
 use * from common;
 use mmc3;
 
-options(bank: 0);
-include("macro.asm");
-include("title.asm");
+@(bank: 0);
+@include("macro.asm");
+@include("title.asm");
 
 use main;
 
 public const PPU_ADDR_PALLET = 0x3f00;
 
-const TITLE_PALLET = incbin("data/title.pal");
-const TITLE_BG = incbin("data/title.nam");
+const TITLE_PALLET = @incbin("data/title.pal");
+const TITLE_BG = @incbin("data/title.nam");
 const TITLE_TAITO = [0x9f, 0xa0, 0xa1, 0xa2, 0xa3, 0xa4, 0xa5, 0xa6, 0xa7, 0xa8,
 	0x00, 0xa9, 0xaa, 0xab, 0xac, 0xad, 0xae, 0xaf, 0xb0, 0xb1];
 
-var title_scroll:int;
-var title_state:int;
+var title_scroll:u8;
+var title_state:u8;
 
 function title_irq_setup():void;
 
@@ -48,7 +48,7 @@ function title_init():void
 	util.ppu_fill(0x27c0 + 16, 0xa5, 8);
 
 	util.ppu_unlock();
-	asm("cli");
+	@asm("cli");
 }
 
 public function title_run():void
