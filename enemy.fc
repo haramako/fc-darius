@@ -120,7 +120,7 @@ function en_none_process(i:u8):void {}
 public function bang_new(x:u8, y:u8):void
 {
 	var i = en_new();
-	if (i != -1) {
+	if (i != 255) {
 		en_type[i] = 1;
 		en_x[i] = x;
 		en_y[i] = y;
